@@ -5,6 +5,13 @@ from nltk.stem import *
 import nltk
 from nltk.corpus import stopwords
 import string 
+from bs4 import BeautifulSoup
+import pandas as pd
+from nltk.stem import *
+from nltk.corpus import stopwords
+from collections import Counter
+from functools import reduce
+
 
 # 1. Data collection
 # 1.1 get the list of master's degree courses
@@ -120,7 +127,7 @@ def stem_description(description):
 nltk.download('stopwords')
 
 # Define a function to handle stopwords and stemming with checks for None values
-def clean_description(description):
+def clean_description_s(description):
     lst_stopwords = stopwords.words('english')
     if description is not None and isinstance(description, str):  # Check if description is not None and is a string
         words = description.split(' ')
@@ -129,7 +136,7 @@ def clean_description(description):
         return []  # Return an empty list for None or non-string values
     
 # 3. Remove punctuation
-def clean_description(description):
+def clean_description_p(description):
     lst_stopwords = stopwords.words('english')
     if description is not None and isinstance(description, str):  
         # Check if description is not None and is a string
