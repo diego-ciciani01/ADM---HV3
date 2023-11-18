@@ -5,13 +5,6 @@ from nltk.stem import *
 import nltk
 from nltk.corpus import stopwords
 import string 
-from bs4 import BeautifulSoup
-import pandas as pd
-from nltk.stem import *
-from nltk.corpus import stopwords
-from collections import Counter
-from functools import reduce
-
 
 # 1. Data collection
 # 1.1 get the list of master's degree courses
@@ -116,36 +109,22 @@ def extract_msc_page(file_path):
 
 # 1. stemming
 stemmer = PorterStemmer()
-# Define a function to handle stemming with checks for None values
+# Define a function to handle stemming
 def stem_description(description):
-    if description is not None and isinstance(description, str):  # Check if description is not None and is a string
-        return [stemmer.stem(word) for word in description.split(' ')]
-    else:
-        return []  # Return an empty list for None or non-string values
+    return [stemmer.stem(word) for word in description.split(' ')]
     
 # 2. Remove stopwords
 nltk.download('stopwords')
+stop_words = set(stopwords.words('english'))
 
-# Define a function to handle stopwords and stemming with checks for None values
-def clean_description_s(description):
-    lst_stopwords = stopwords.words('english')
-    if description is not None and isinstance(description, str):  # Check if description is not None and is a string
-        words = description.split(' ')
-        return [stemmer.stem(word) for word in words if word not in lst_stopwords]
-    else:
-        return []  # Return an empty list for None or non-string values
+# Define a function to remove stopwords 
+stop_words = set(stopwords.words('english'))
+def remove_stopwords(words_list):
+    return [word for word in words_list if word not in stop_words]
     
 # 3. Remove punctuation
-def clean_description_p(description):
-    lst_stopwords = stopwords.words('english')
-    if description is not None and isinstance(description, str):  
-        # Check if description is not None and is a string
-        words = nltk.word_tokenize(description)
-        cleaned_words = [stemmer.stem(word) for word in words if word not in lst_stopwords and word.isalnum()]
-        return cleaned_words
-    else:
-        return []  # Return an empty list for None or non-string values
-    
+def remove_punctuation(words):
+    return [word for word in words if word not in string.punctuation]
 
 # 2.0.1 Preprocessing the fees column ????????????????????????????????????????????
 
