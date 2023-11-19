@@ -18,7 +18,7 @@ def extract_masters(this_url):
     return result_list
 
 # 1.3 Parse downloaded pages
-def extract_msc_page(file_path):
+  def extract_msc_page(file_path):
     course_info = {}
     with open(file_path, 'r', encoding='utf-8') as file:
       contents = []
@@ -26,83 +26,86 @@ def extract_msc_page(file_path):
 
       course_containers = page_soup.find_all('div', class_='course-header')
       course_data_containers = page_soup.find_all('div', class_='course-data__container')
-      for course_container in course_containers:
-            #Course Name
-            name_links = course_container.find_all('h1', class_='course-header__course-title')
-            if name_links:
-                course_info['courseName'] = name_links[0].text.strip()
-            else:
-                course_info['courseName'] = ''
-            
-            # url ??
-            
+      coruse_link = page_soup.find_all('link', href=True)
 
-            #University Name
-            university_links = course_container.find_all('a', class_='course-header__institution')
-            if university_links:
-                course_info['universityName'] = university_links[0].text.strip()
-            else:
+      for course_container in course_containers:
+              #Course Name
+              name_links = course_container.find_all('h1', class_='course-header__course-title')
+              if name_links:
+                  course_info['courseName'] = name_links[0].text.strip()
+              else:
+                  course_info['courseName'] = ''
+
+              #University Name
+              university_links = course_container.find_all('a', class_='course-header__institution')
+              if university_links:
+                  course_info['universityName'] = university_links[0].text.strip()
+              else:
                   course_info['universityName'] = ''
 
-            #Faculty Name (department)
-            faculty_links = course_container.find_all('a', class_='course-header__department')
-            if faculty_links:
-                course_info['facultyName'] = faculty_links[0].text.strip()
-            else:
-              course_info['facultyName'] = ''
+              #Faculty Name (department)
+              faculty_links = course_container.find_all('a', class_='course-header__department')
+              if faculty_links:
+                  course_info['facultyName'] = faculty_links[0].text.strip()
+              else:
+                  course_info['facultyName'] = ''
 
-          #Full or Part Time
-            full_time_links = course_container.find_all('a', class_='concealLink')
-            fullTime = False
-            for item in full_time_links:
-              if item['href'] == '/masters-degrees/full-time/':
-                    fullTime = True
-                    break
-            course_info['isItFullTime'] = fullTime
+              #Full or Part Time
+              full_time_links = course_container.find_all('a', class_='concealLink')
+              fullTime = False
+              for item in full_time_links:
+                  if item['href'] == '/masters-degrees/full-time/':
+                      fullTime = True
+                      break
+              course_info['isItFullTime'] = fullTime
 
-            description = page_soup.find('div', id='Snippet')
-            description_without_tags =  description.get_text()
-            course_info['description'] = description_without_tags.replace('\n', '')
+              description = page_soup.find('div', id='Snippet')
+              description_without_tags =  description.get_text()
+              course_info['description'] = description_without_tags.replace('\n', '')
 
-            start_data = page_soup.find('span', class_='key-info__start-date')
-            course_info['start_data'] = start_data.text
+              start_data = page_soup.find('span', class_='key-info__start-date')
+              course_info['startDate'] = start_data.text
 
-            qualification_data = page_soup.find('span', class_="key-info__qualification")
-            course_info['modality'] = qualification_data.text
+              qualification_data = page_soup.find('span', class_="key-info__qualification")
+              course_info['modality'] = qualification_data.text
 
-            duration_data = page_soup.find('span', class_="key-info__duration")
-            course_info['duration'] = duration_data.text
+              duration_data = page_soup.find('span', class_="key-info__duration")
+              course_info['duration'] = duration_data.text
 
-            fees_data = page_soup.find('div', class_="course-sections__fees")
-            fees_without_tags = fees_data.get_text()
-            course_info['fees'] = fees_without_tags.replace('\n', '')
+              fees_data = page_soup.find('div', class_="course-sections__fees")
+              if fees_data:
+                fees_without_tags = fees_data.get_text()
+                course_info['fees'] = fees_without_tags.replace('\n', '')
+              else:
+                course_info['fees'] = ''
+
 
               #get course data container
-    for course_data_cointainer in course_data_containers:
+      for course_data_cointainer in course_data_containers:
 
-        country_links = course_data_cointainer.find_all('a', class_='course-data__country')
-        if country_links:
-            course_info['country'] = country_links[0].text.strip()
-        else:
-            course_info['country'] = ''
+            country_links = course_data_cointainer.find_all('a', class_='course-data__country')
+            if country_links:
+                course_info['country'] = country_links[0].text.strip()
+            else:
+                course_info['country'] = ''
 
-        city_links = course_data_cointainer.find_all('a', class_='course-data__city')
-        if city_links:
-            course_info['city'] = city_links[0].text.strip()
-        else:
-            course_info['city'] = ''
+            city_links = course_data_cointainer.find_all('a', class_='course-data__city')
+            if city_links:
+                course_info['city'] = city_links[0].text.strip()
+            else:
+                course_info['city'] = ''
 
-        administrator_links = course_data_cointainer.find_all('a', class_='course-data__on-campus')
-        if administrator_links:
-            course_info['administrator'] = administrator_links[0].text.strip()
-        else:
-            course_info['administrator'] = ''
+            administrator_links = course_data_cointainer.find_all('a', class_='course-data__on-campus')
+            if administrator_links:
+                course_info['administration'] = administrator_links[0].text.strip()
+            else:
+                course_info['administration'] = ''
 
+      course_info["url"] = coruse_link[0]['href']
 
       #aggiungere url della pagina nel datafeame
-    contents.append(course_info)
+      contents.append(course_info)
     return contents
-
 
 # 2. Search Engine
 # 2.0.0 Preprocessing the text
