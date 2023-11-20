@@ -1,0 +1,17 @@
+
+{
+    "query on features" : {
+        "courseName" : "Healthcare management and leadership",
+        "universityName" : "Worcester", 
+        "universityCity" : "Worcester"
+    }, 
+    "Fees Range" : {
+        "lower import" : "",
+        "upper import" : ""    
+    }, 
+
+    "list of countries" : [],
+    "course already started" : "",
+    "precence of online modality" : ""
+
+}
