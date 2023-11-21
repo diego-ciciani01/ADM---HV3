@@ -50,10 +50,10 @@ def extract_msc_page(file_path):
 
           #Full or Part Time
             full_time_links = course_container.find_all('a', class_='concealLink')
-            fullTime = False
+            fullTime = 'Part Time'
             for item in full_time_links:
               if item['href'] == '/masters-degrees/full-time/':
-                    fullTime = True
+                    fullTime = 'Full Time'
                     break
             course_info['isItFullTime'] = fullTime
 
