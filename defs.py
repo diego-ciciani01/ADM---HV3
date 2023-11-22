@@ -57,45 +57,52 @@ def extract_msc_page(file_path):
                     break
             course_info['isItFullTime'] = fullTime
 
+            #Description
             description = page_soup.find('div', id='Snippet')
             description_without_tags =  description.get_text()
             course_info['description'] = description_without_tags.replace('\n', '')
 
+            #Start data
             start_data = page_soup.find('span', class_='key-info__start-date')
             course_info['start_data'] = start_data.text
 
+            #Modality
             qualification_data = page_soup.find('span', class_="key-info__qualification")
             course_info['modality'] = qualification_data.text
 
+            #Duration
             duration_data = page_soup.find('span', class_="key-info__duration")
             course_info['duration'] = duration_data.text
 
+            #Fees
             fees_data = page_soup.find('div', class_="course-sections__fees")
             fees_without_tags = fees_data.get_text()
             course_info['fees'] = fees_without_tags.replace('\n', '')
 
               #get course data container
     for course_data_cointainer in course_data_containers:
-
+        #Country
         country_links = course_data_cointainer.find_all('a', class_='course-data__country')
         if country_links:
             course_info['country'] = country_links[0].text.strip()
         else:
             course_info['country'] = ''
-
+        
+        #City
         city_links = course_data_cointainer.find_all('a', class_='course-data__city')
         if city_links:
             course_info['city'] = city_links[0].text.strip()
         else:
             course_info['city'] = ''
-
+        
+        #Administrator
         administrator_links = course_data_cointainer.find_all('a', class_='course-data__on-campus')
         if administrator_links:
             course_info['administrator'] = administrator_links[0].text.strip()
         else:
             course_info['administrator'] = ''
 
-      #aggiungere url della pagina nel datafeame
+      #aggiungere url della pagina nel datafeame MANCA?
     contents.append(course_info)
     return contents
 
