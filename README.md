@@ -8,13 +8,13 @@ The repository contains these files:
      - Get the list of master's degree courses
      - Crawl master's degree pages
      - Parse downloaded pages
-  2. Search Engine
+  3. Search Engine
      - Preprocessing
      - Conjunctive query
      - Conjunctive query & Ranking score
-  3. Define a new score!
-  4. Visualizing the most relevant MSc degrees
-  5. BONUS: More complex search engine
+  4. Define a new score!
+  5. Visualizing the most relevant MSc degrees
+  6. BONUS: More complex search engine
   
   7. Algorithmic Question 
 
