@@ -15,7 +15,7 @@ The repository contains these files:
   - ##### 3. Define a new score!
   - ##### 4. Visualizing the most relevant MSc degrees
   - ##### 5. BONUS: More complex search engine
-  - ##### Algorithmic Question 
+  - ##### 7. Algorithmic Question 
 
 - [__`CommandLine.sh`__]( ):
   > The solution to the Command Line questions at point 6.
