@@ -42,7 +42,7 @@ The repository contains these files:
   > The outpout of the CommandLine.sh file
 
 ## Group 9 - member :
-- Antonella Mei 
-- Sofia Noemi Crobeddu
 - Diego Ciciani
+- Sofia Noemi Crobeddu
 - Emmanuele De Lucia
+- Antonella Mei
