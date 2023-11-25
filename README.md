@@ -38,7 +38,7 @@ The repository contains these files:
 - [__`CommandLine.sh`__]( ):
   > The solution to the Command Line questions at point 6.
 
-- [__`MANCA.jpeg`__]( ):
+- [__`command_line.jpeg`__]( ):
   > The outpout of the CommandLine.sh file
 
 ## Group 9 - member :
