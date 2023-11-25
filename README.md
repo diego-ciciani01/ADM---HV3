@@ -1,7 +1,7 @@
 # ADM-HW3: Master's Degrees from all over!
 Homework 3 of Algorithmic Methods of Data Mining (Sc.M. in Data Science), a. y. 2023–2024. 
 The repository contains these files:
-- [__`MANCA.ipynb`__]( ):
+- [__`mainGroup9.ipynb`__]( ):
   > A Jupyter notebook WITH the solutions to the theoretical and research questions:
 
   - ##### 1. Data collection
