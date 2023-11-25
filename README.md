@@ -15,6 +15,7 @@ The repository contains these files:
   - ##### 3. Define a new score!
   - ##### 4. Visualizing the most relevant MSc degrees
   - ##### 5. BONUS: More complex search engine
+  - ##### 6. Command line Question
   - ##### 7. Algorithmic Question 
 
 - [__`defs.py`__]( ):
