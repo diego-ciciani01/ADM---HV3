@@ -5,6 +5,11 @@ from nltk.stem import *
 import nltk
 from nltk.corpus import stopwords
 import string 
+import pandas as pd
+from forex_python.converter import CurrencyRates
+from collections import defaultdict
+import heapq
+from geopy.geocoders import Nominatim
 
 # 1. Data collection
 # 1.1 get the list of master's degree courses
@@ -129,7 +134,39 @@ def remove_stopwords(words_list):
 def remove_punctuation(words):
     return [word for word in words if word not in string.punctuation]
 
-# 2.0.1 Preprocessing the fees column ????????????????????????????????????????????
+# 2.0.1 Preprocessing the fees column 
+
+# function to convert the symbol to the letteral currency
+symbol_to_name = {
+    '$': 'USD',
+    '€': 'EUR',
+    '£': 'GBP',
+    '¥': 'JPY',
+    '₹': 'INR'}
+def converti_simbolo_a_letterale(simbolo):
+    return symbol_to_name.get(simbolo, simbolo)
+
+c = CurrencyRates()
+def convert_currency(amount, from_currency, to_currency):
+    if from_currency == to_currency:
+      return from_currency
+    else :
+      return c.convert(from_currency, to_currency, amount)
+    
+def convert_and_replace(x):
+    if pd.notnull(x):
+        costo = float(x['costo'].replace(',', ''))
+        valuta = converti_simbolo_a_letterale(x['valuta']) if x['valuta'] else None
+        
+        if valuta:
+            converted_amount = convert_currency(costo, valuta, 'EUR')
+            return converted_amount
+        else:
+            # Se la valuta è None, restituisci il valore originale
+            return costo
+    else:
+        return x
+
 
 # 2.1.2 Execute the query
 def query_preprocess(text):
@@ -154,18 +191,113 @@ def query_preprocess(text):
     
     return text
 
+#2.2.1 Conjunctive query
+# create second inverted index
+def create_second_inverted_index(inv_indx, vocabulary, tfidataset_data, feat):
+    # feat is the column we're querying on 
+    extended_inverted_index = defaultdict(list)
+    
+    # Iterate through each term in the inverted index
+    for term_id, doc_indices in inv_indx.items():
+        # Iterate through each document index for the current term
+        
+        for doc_index in doc_indices:
+            # Get the TF-Idataset scores for the current document 
+            word = vocabulary[vocabulary['term_id'] == term_id]['term'].values
+         
+            if  word[0] in tfidataset_data.columns: # check if the word is in the tfidataset
+                    tfidataset_scores = tfidataset_data.loc[doc_index,word[0]]
+            else:
+                    continue
+    
+            # Append a tuple of (document_index, TF-Idataset scores) to the term's list in the extended inverted index
+            extended_inverted_index[term_id].append((doc_index, tfidataset_scores))
+    
+    # Convert the extended inverted index defaultdict to a regular dictionary
+    extended_inverted_index = dict(extended_inverted_index)
+    
+    # save the extended inverted dictionary in a txt file as before
+    name_file = f'Extended Inverted Index {feat}.txt'
+    with open(name_file, 'w') as file:
+    
+        for key, value in extended_inverted_index.items():
+            file.write(f'{key}: {value}\n')
+    file.close()
+
+# read the inverted index from the file.
+def read_inverted_index(feat):
+    name_file = f'Extended Inverted Index {feat}.txt'
+    file = open(name_file, "r")
+    
+    ext_inv_indx_feat = dict()
+    txt = file.read().split("\n")
+    
+    for i in range(len(txt)-1):
+        line = txt[i].replace(":", "").replace("[", "").replace("]", "").replace("(", "").replace(")", "").replace(",", "").split(" ")
+        ext_inv_indx_feat[int(line[0])] = []
+        for j in range(1, len(line)):
+            if j%2 == 1:
+                ext_inv_indx_feat[int(line[0])].append((int(line[j]), float(line[j+1])))
+                
+    file.close()
+    return ext_inv_indx_feat
+
 # 2.2.2 Execute the query 
+
+# create a vector for the query
+def create_vector_query(query, vocabulary, tfidataset_data):
+    query_vec = np.zeros(vocabulary.shape[0]) # inizialize the vector
+    for word in query:
+        if word in tfidataset_data.columns:
+            term_id = vocabulary[vocabulary['term'] == word]['term_id']
+            query_vec[term_id] = 1.0
+    return query_vec
+
+# compute the cosine similarity
 def a_cosine_similarity(query_vec, doc_arr):
-    # Your implementation for cosine similarity calculation
-    # Ensure to handle cases where the computation might result in None
-    # If cosine similarity calculation fails, return a value that indicates failure (e.g., -1)
-    # If successful, return the computed cosine similarity value
     try:
         cos_sim =np.dot(query_vec, doc_arr) / (np.linalg.norm(doc_arr) * np.linalg.norm(query_vec))
         if cos_sim is None or np.isnan(cos_sim) or np.isinf(cos_sim):
-            return -1  # Return a value indicating failure
+            return 0.0  # Return zero if fails 
         return cos_sim  # Return the computed cosine similarity
     except Exception as e:
         print("Error in cosine similarity calculation:", e)
-        return -1  # Return a value indicating failure
+        return 0.0  # Return a value indicating failure
+    
+
+def execute_query(k, heap):
+    top_k = heapq.nlargest(k, heap)    
+    print(top_k)
+    top_doc_k = []
+    
+    #fill the list of top_k_doc
+    for score, doc in top_k:
+        top_doc_k.append(doc)
+    print(top_doc_k)
+    return top_k, top_doc_k
+    
+# 4. Visualizing the most relevant MSc degrees
+#Function to obtain the coordinates given the name of the university, the city and the country
+def get_coordinates(universityName, city, country):
+
+    full_address = f"{universityName}, {city}, {country}"
+    small_address = f"{city}, {country}"
+    
+    geolocator = Nominatim(user_agent="location_finder")
+    
+    try:
+        #Attempt to geocode with full address
+        full_location = geolocator.geocode(full_address, timeout=10)
+        if full_location and full_location.latitude is not None and full_location.longitude is not None:
+            return full_location.latitude, full_location.longitude
+        else:
+            #If full address geocoding fails or returns null coordinates, try with city and country
+            small_location = geolocator.geocode(small_address, timeout=10)
+            if small_location:
+                return small_location.latitude, small_location.longitude
+            else:
+                return None, None
+    except Exception as e:
+        print(f"Error during the geocodify: {e}")
+        return None, None
     
