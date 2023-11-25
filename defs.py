@@ -28,9 +28,10 @@ def extract_msc_page(file_path):
     with open(file_path, 'r', encoding='utf-8') as file:
       contents = []
       page_soup = BeautifulSoup(file, 'html.parser')
-
+        
       course_containers = page_soup.find_all('div', class_='course-header')
       course_data_containers = page_soup.find_all('div', class_='course-data__container')
+      coruse_link = page_soup.find_all('link', href=True)
       for course_container in course_containers:
             #Course Name
             name_links = course_container.find_all('h1', class_='course-header__course-title')
@@ -105,9 +106,10 @@ def extract_msc_page(file_path):
         if administrator_links:
             course_info['administrator'] = administrator_links[0].text.strip()
         else:
-            course_info['administrator'] = ''
+            course_info['administrator'] = 'On line'
 
-      #aggiungere url della pagina nel datafeame MANCA?
+    course_info["url"] = coruse_link[0]['href']
+    
     contents.append(course_info)
     return contents
 
