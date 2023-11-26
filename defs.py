@@ -303,3 +303,11 @@ def get_coordinates(universityName, city, country):
         print(f"Error during the geocodify: {e}")
         return None, None
     
+# 5. Bonus point
+# Function to check if any of the months of the starting date are present in the start date
+months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+current_month = 11
+months_to_keep = months[current_month-4:current_month]
+def filter_months(row):
+    start_dates = row.split(', ')
+    return any(month in start_dates for month in months_to_keep)
